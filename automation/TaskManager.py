@@ -344,25 +344,71 @@ class TaskManager:
                 if command_executed:
                     break
                 time.sleep(SLEEP_CONS)
-
-        elif index == '*':
-            # send the command to all browsers
-            command_executed = [False] * len(self.browsers)
-            while False in command_executed:
-                for i in range(len(self.browsers)):
-                    if self.browsers[i].ready() and not command_executed[i]:
+        elif isinstance(index, str):
+            if index == '*':
+                # send the command to all browsers
+                command_executed = [False] * len(self.browsers)
+                while False in command_executed:
+                    for i in range(len(self.browsers)):
+                        if self.browsers[i].ready() and not command_executed[i]:
+                            self.browsers[
+                                i].current_timeout = command_seq.total_timeout
+                            thread = self._start_thread(
+                                self.browsers[i], command_seq)
+                            command_executed[i] = True
+                    time.sleep(SLEEP_CONS)
+            elif index == '**':
+                # send the command to all browsers and sync it
+                condition = threading.Condition()  # block threads until ready
+                command_executed = [False] * len(self.browsers)
+                while False in command_executed:
+                    for i in range(len(self.browsers)):
+                        if self.browsers[i].ready() and not command_executed[i]:
+                            self.browsers[
+                                i].current_timeout = command_seq.total_timeout
+                            thread = self._start_thread(
+                                self.browsers[i], command_seq, condition)
+                            command_executed[i] = True
+                    time.sleep(SLEEP_CONS)
+                with condition:
+                    condition.notifyAll()  # All browsers loaded, start
+            elif index == "control":
+                control_browsers = [b for b in self.browsers if b.browser_params["control"]]
+                # send the command to all browsers and sync it
+                condition = threading.Condition()  # block threads until ready
+                command_executed = [False] * len(control_browsers)
+                while False in command_executed:
+                    for i in range(len(control_browsers)):
+                        if control_browsers[i].ready() and not command_executed[i]:
+                            control_browsers[
+                                i].current_timeout = command_seq.total_timeout
+                            thread = self._start_thread(
+                                control_browsers[i], command_seq, condition)
+                            command_executed[i] = True
+                    time.sleep(SLEEP_CONS)
+                with condition:
+                    condition.notifyAll()  # All browsers loaded, start
+            else:
+                self.logger.info("Command string unsupported")
+        elif isinstance(index, int):
+            if 0 <= index < len(self.browsers):
+                # send the command to this specific browser
+                while True:
+                    if self.browsers[index].ready():
                         self.browsers[
-                            i].current_timeout = command_seq.total_timeout
+                            index].current_timeout = command_seq.total_timeout
                         thread = self._start_thread(
-                            self.browsers[i], command_seq)
-                        command_executed[i] = True
-                time.sleep(SLEEP_CONS)
-        elif index == '**':
+                            self.browsers[index], command_seq)
+                        break
+                    time.sleep(SLEEP_CONS)
+            else:
+                self.logger.info("Index out of range")
+        elif isinstance(index, list):
             # send the command to all browsers and sync it
             condition = threading.Condition()  # block threads until ready
             command_executed = [False] * len(self.browsers)
             while False in command_executed:
-                for i in range(len(self.browsers)):
+                for i in index:
                     if self.browsers[i].ready() and not command_executed[i]:
                         self.browsers[
                             i].current_timeout = command_seq.total_timeout
@@ -372,19 +418,9 @@ class TaskManager:
                 time.sleep(SLEEP_CONS)
             with condition:
                 condition.notifyAll()  # All browsers loaded, start
-        elif 0 <= index < len(self.browsers):
-            # send the command to this specific browser
-            while True:
-                if self.browsers[index].ready():
-                    self.browsers[
-                        index].current_timeout = command_seq.total_timeout
-                    thread = self._start_thread(
-                        self.browsers[index], command_seq)
-                    break
-                time.sleep(SLEEP_CONS)
         else:
             self.logger.info(
-                "Command index type is not supported or out of range")
+                "Command index type is not supported")
             return
 
         if command_seq.blocking:
@@ -437,6 +473,13 @@ class TaskManager:
                               'DUMP_PAGE_SOURCE',
                               'RECURSIVE_DUMP_PAGE_SOURCE']:
                 start_time = time.time()
+                if command[0] == 'DUMP_PAGE_SOURCE' and command[1] == '__BY_GROUP':
+                    command = list(command)
+                    if browser.browser_params['control']:
+                        command[1] = 'control'
+                    else:
+                        command[1] = 'experimental'
+                    command = tuple(command)
                 command += (browser.curr_visit_id,)
             elif command[0] in ['DUMP_FLASH_COOKIES', 'DUMP_PROFILE_COOKIES']:
                 command += (start_time, browser.curr_visit_id,)
