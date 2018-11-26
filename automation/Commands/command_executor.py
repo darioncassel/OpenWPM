@@ -14,6 +14,9 @@ def execute_command(command, webdriver, browser_settings, browser_params,
     if command[0] == 'SWITCH_TO_FRAME':
         browser_commands.switch_to_frame(driver=webdriver, idx=command[1])
 
+    if command[0] == 'RESET_FOCUS':
+        browser_commands.reset_focus(driver=webdriver)
+
     if command[0] == 'PAGE_DOWN':
         browser_commands.page_down(driver=webdriver, count=command[1])
 

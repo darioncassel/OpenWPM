@@ -59,6 +59,15 @@ class CommandSequence:
                                         "the click command", self)
         command = ('SWITCH_TO_FRAME', idx)
         self.commands_with_timeout.append((command, timeout))
+    
+    def reset_focus(self, timeout=60):
+        """ switches to default page content """
+        self.total_timeout += timeout
+        if not self.contains_get_or_browse:
+            raise CommandExecutionError("No get or browse request preceding "
+                                        "the click command", self)
+        command = ('RESET_FOCUS',)
+        self.commands_with_timeout.append((command, timeout))
 
     def page_down(self, count, timeout=60):
         """ scrolls page by pushing space key 'count' times """
@@ -68,7 +77,6 @@ class CommandSequence:
                                         "the click command", self)
         command = ('PAGE_DOWN', count)
         self.commands_with_timeout.append((command, timeout))
-
 
     def get(self, sleep=0, timeout=60):
         """ goes to a url """

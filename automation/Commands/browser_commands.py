@@ -39,6 +39,9 @@ def click(driver, xpath):
 def switch_to_frame(driver, idx):
     driver.switch_to.frame(driver.find_elements_by_tag_name("iframe")[idx])
 
+def reset_focus(driver):
+    driver.switch_to.default_content()
+
 def page_down(driver, count=1):
     driver.find_elements_by_tag_name("body")[0].click()
     action = ActionChains(driver)
