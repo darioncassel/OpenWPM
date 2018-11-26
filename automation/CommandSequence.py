@@ -42,6 +42,34 @@ class CommandSequence:
         self.total_timeout = 0
         self.contains_get_or_browse = False
 
+    def click(self, xpath, timeout=60):
+        """ clicks mouse on element specified by xpath """
+        self.total_timeout += timeout
+        if not self.contains_get_or_browse:
+            raise CommandExecutionError("No get or browse request preceding "
+                                    "the click command", self)
+        command = ('CLICK', xpath)
+        self.commands_with_timeout.append((command, timeout))
+
+    def switch_to_frame(self, idx, timeout=60):
+        """ switches to iframe specified by idx """
+        self.total_timeout += timeout
+        if not self.contains_get_or_browse:
+            raise CommandExecutionError("No get or browse request preceding "
+                                        "the click command", self)
+        command = ('SWITCH_TO_FRAME', idx)
+        self.commands_with_timeout.append((command, timeout))
+
+    def page_down(self, count, timeout=60):
+        """ scrolls page by pushing space key 'count' times """
+        self.total_timeout += timeout
+        if not self.contains_get_or_browse:
+            raise CommandExecutionError("No get or browse request preceding "
+                                        "the click command", self)
+        command = ('PAGE_DOWN', count)
+        self.commands_with_timeout.append((command, timeout))
+
+
     def get(self, sleep=0, timeout=60):
         """ goes to a url """
         self.total_timeout += timeout

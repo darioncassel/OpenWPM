@@ -8,6 +8,15 @@ def execute_command(command, webdriver, browser_settings, browser_params,
     """Executes BrowserManager commands
     commands are of form (COMMAND, ARG0, ARG1, ...)
     """
+    if command[0] == 'CLICK':
+        browser_commands.click(driver=webdriver, xpath=command[1])
+
+    if command[0] == 'SWITCH_TO_FRAME':
+        browser_commands.switch_to_frame(driver=webdriver, idx=command[1])
+
+    if command[0] == 'PAGE_DOWN':
+        browser_commands.page_down(driver=webdriver, count=command[1])
+
     if command[0] == 'GET':
         browser_commands.get_website(
             url=command[1], sleep=command[2], visit_id=command[3],

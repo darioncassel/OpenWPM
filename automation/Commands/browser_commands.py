@@ -16,6 +16,7 @@ from selenium.common.exceptions import (MoveTargetOutOfBoundsException,
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.keys import Keys
 from six.moves import range
 
 from ..MPLogger import loggingclient
@@ -32,6 +33,18 @@ NUM_MOUSE_MOVES = 10  # Times to randomly move the mouse
 RANDOM_SLEEP_LOW = 1  # low (in sec) for random sleep between page loads
 RANDOM_SLEEP_HIGH = 7  # high (in sec) for random sleep between page loads
 
+def click(driver, xpath):
+    driver.find_elements_by_xpath(xpath)[0].click()
+
+def switch_to_frame(driver, idx):
+    driver.switch_to.frame(driver.find_elements_by_tag_name("iframe")[idx])
+
+def page_down(driver, count=1):
+    driver.find_elements_by_tag_name("body")[0].click()
+    action = ActionChains(driver)
+    for _ in range(count):
+        action.send_keys(Keys.SPACE).perform()
+        time.sleep(1)
 
 def bot_mitigation(webdriver):
     """ performs three optional commands for bot-detection
