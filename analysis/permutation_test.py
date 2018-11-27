@@ -1,10 +1,12 @@
+from __future__ import division
+from __future__ import absolute_import
 import numpy as np
 import random                  # for random shuffles
 from datetime import datetime  # for getting times for computation
 from scipy import stats        # for confidence_interval computation
 
 
-class UniqueElement:
+class UniqueElement(object):
     def __init__(self, value, occurrences):
         self.value = value
         self.occurrences = occurrences
@@ -13,7 +15,7 @@ class UniqueElement:
 def perm_unique(elements):
     bins = np.bincount(elements)
     listunique = []
-    for i in range(0, len(bins)):
+    for i in xrange(0, len(bins)):
         listunique.append(UniqueElement(i, bins[i]))
 
     u = len(elements)
@@ -53,7 +55,7 @@ def get_perm(ylabel):
     blocks = ylabel.shape[0]
     yret = np.copy(ylabel)
 
-    for i in range(0, blocks):
+    for i in xrange(0, blocks):
         random.shuffle(yret[i])
     return yret
 
@@ -79,19 +81,18 @@ def blocked_sampled_test(
 
     s = datetime.now()
     Tobs = test_stat(observed_values, unit_assignments)
-    print('Tobs: ', Tobs)
+    print 'Tobs: ', Tobs
     under = 0
 
-    for i in range(0, iterations):
+    for i in xrange(0, iterations):
         permuted_assignments = get_perm(unit_assignments)
         Tpi = test_stat(observed_values, permuted_assignments)
         if round(Tobs, 10) <= round(Tpi, 10):
             under += 1
     e = datetime.now()
-    print("---Time for running permutation test: ", str(e-s))
-    print("\nConfidence Interval of p-value:",
+    print "---Time for running permutation test: ", unicode(e-s)
+    print "\nConfidence Interval of p-value:",
           proportion_confint(under, iterations, alpha, 'beta')
-    )
     return (1.0*under) / (1.0*iterations)
 
 
