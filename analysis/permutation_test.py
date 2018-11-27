@@ -4,6 +4,7 @@ import numpy as np
 import random                  # for random shuffles
 from datetime import datetime  # for getting times for computation
 from scipy import stats        # for confidence_interval computation
+from scipy import optimize
 
 
 class UniqueElement(object):
