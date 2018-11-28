@@ -372,18 +372,18 @@ class TaskManager:
                     time.sleep(SLEEP_CONS)
                 with condition:
                     condition.notifyAll()  # All browsers loaded, start
-            elif index == "control":
-                control_browsers = [b for b in self.browsers if b.browser_params["control"]]
+            elif index == "experimental":
+                experimental_browsers = [b for b in self.browsers if b.browser_params["experimental"]]
                 # send the command to all browsers and sync it
                 condition = threading.Condition()  # block threads until ready
-                command_executed = [False] * len(control_browsers)
+                command_executed = [False] * len(experimental_browsers)
                 while False in command_executed:
-                    for i in range(len(control_browsers)):
-                        if control_browsers[i].ready() and not command_executed[i]:
-                            control_browsers[
+                    for i in range(len(experimental_browsers)):
+                        if experimental_browsers[i].ready() and not command_executed[i]:
+                            experimental_browsers[
                                 i].current_timeout = command_seq.total_timeout
                             thread = self._start_thread(
-                                control_browsers[i], command_seq, condition)
+                                experimental_browsers[i], command_seq, condition)
                             command_executed[i] = True
                     time.sleep(SLEEP_CONS)
                 with condition:

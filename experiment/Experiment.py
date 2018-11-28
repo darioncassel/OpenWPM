@@ -90,8 +90,8 @@ class Experiment(object):
                     action(command_sequence)
             else:
                 stage.actions(command_sequence)
-            if stage.group == 'control':
-                self.manager.execute_command_sequence(command_sequence, index='control')
+            if stage.group == 'experimental':
+                self.manager.execute_command_sequence(command_sequence, index='experimental')
             else:
                 self.manager.execute_command_sequence(command_sequence, index='**')
         self.manager.close()
