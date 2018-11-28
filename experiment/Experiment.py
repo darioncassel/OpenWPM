@@ -5,6 +5,7 @@ from analysis.ProcessData import ProcessData
 from copy import copy
 from sys import argv
 from random import shuffle
+import os, shutil
 
 
 class Stage(object):
@@ -16,12 +17,19 @@ class Stage(object):
 
 
 class Experiment(object):
-    def __init__(self, num_browsers=10, num_blocks=1, feature_extract=None, data_directory="~/Desktop/", stages=[]):
+    def __init__(self, 
+                 num_browsers=10, 
+                 num_blocks=1, 
+                 feature_extract=None, 
+                 data_directory="~/Desktop/",
+                 save_path="tmp_data_file.txt",
+                 stages=[]):
         self.num_browsers = num_browsers
         self.num_blocks = num_blocks
         self.stages = stages
         self.feature_extract = feature_extract
         self.data_directory = data_directory
+        self.save_path = save_path
         self.blocked_data = []
         self.block_assignments = []
         self.manager = self.init_manager()
@@ -68,7 +76,10 @@ class Experiment(object):
 
         # Instantiates the measurement platform
         # Commands time out by default after 60 seconds
-        manager = TaskManager.TaskManager(manager_params, browser_params)
+        try:
+            manager = TaskManager.TaskManager(manager_params, browser_params)
+        except TypeError:
+            raise Exception("Failed to start the manager")
         return manager
     
     def run_once(self):
@@ -84,8 +95,20 @@ class Experiment(object):
             else:
                 self.manager.execute_command_sequence(command_sequence, index='**')
         self.manager.close()
+
+    def clean_data_dir(self):
+        folder = self.data_directory + "sources/"
+        for the_file in os.listdir(folder):
+            file_path = os.path.join(folder, the_file)
+            try:
+                if os.path.isfile(file_path):
+                    os.unlink(file_path)
+                #elif os.path.isdir(file_path): shutil.rmtree(file_path)
+            except Exception as e:
+                print(e)
     
     def run(self):
+        self.clean_data_dir()
         self.blocked_data = []
         for _ in range(self.num_blocks):
             self.init_manager()
@@ -97,11 +120,28 @@ class Experiment(object):
         return self.blocked_data
     
     def get_assignments(self):
+        # return self.block_assignments
         assignments = []
         for _ in range(self.num_blocks):
             assignment = [0] * self.num_blocks
             for i in range(self.num_blocks/2):
                 assignment[i] = 1
             assignments.append(assignment)
-        # return self.block_assignments
         return assignments
+    
+    def save_data(self):
+        out_str = "unit assignments\n"
+        for assignment in self.get_assignments():
+            for unit in assignment:
+                out_str += str(unit) + ","
+            out_str += "\n"
+        out_str += "blocks\n"
+        for i, block in enumerate(self.blocked_data):
+            out_str += "isblock " + str(i + 1) + "\n"
+            for observation in block:
+                for unit in observation:
+                    out_str += str(unit) + ","
+                out_str += "\n"
+            out_str += "\n"
+        with open(self.save_path, "w") as save_file:
+            save_file.write(out_str)
