@@ -15,9 +15,10 @@ class Stage(object):
 
 
 class Experiment(object):
-    def __init__(self, num_browsers, stages=[]):
-        self.stages = stages
+    def __init__(self, num_browsers, data_directory="~/Desktop/", stages=[]):
         self.num_browsers = num_browsers
+        self.stages = stages
+        self.data_directory = data_directory
         self.manager = self.init_manager()
 
     def add_stage(self, name, group, site, action):
@@ -55,7 +56,7 @@ class Experiment(object):
             browser_params[i]['control'] = assignments[i]
 
         # Update TaskManager configuration (use this for crawl-wide settings)
-        manager_params['data_directory'] = '~/Desktop/'
+        manager_params['data_directory'] = self.data_directory
         manager_params['log_directory'] = '~/Desktop/'
 
         # Instantiates the measurement platform
