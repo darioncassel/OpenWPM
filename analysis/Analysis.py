@@ -50,7 +50,6 @@ class Analysis():
                         units = [int(x.strip()) for x in line.split(",") if x.strip() == "1" or x.strip() == "0"]
                         if units:
                             observation.append(units)
-                        print observation
                 if "unit assignments" in line:
                     at_unit = True
                 if "blocks" in line:
@@ -58,6 +57,8 @@ class Analysis():
                     at_block = True
             if observation:
                 observations.append(observation)
+        self.unit_assignments = unit_assignments
+        self.observed_values = observations
     
     def get_results(self):
         return self.results
