@@ -9,11 +9,13 @@ class Analysis():
                  test_statistic,
                  observed_values=[], 
                  unit_assignments=[], 
-                 data_path="tmp_data_file.txt"):
+                 data_path="tmp_data_file.txt",
+                 save_path="results.txt"):
         self.test_statistic = test_statistic
         self.observed_values = observed_values
         self.unit_assignments = unit_assignments
         self.data_path = data_path
+        self.save_path = save_path
         self.results = None
 
     def perform(self):
@@ -85,3 +87,7 @@ class Analysis():
     
     def get_results(self):
         return self.results
+
+    def save_results(self):
+        with open(self.save_path, "w") as save_file:
+            save_file.write("p-value: " + str(self.results) + "\n")
