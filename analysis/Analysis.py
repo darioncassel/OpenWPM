@@ -1,6 +1,7 @@
 # import sys
 # from os import path
 # sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+import numpy as np
 from PermutationTest import blocked_sampled_test
 
 
@@ -18,13 +19,22 @@ class Analysis():
         self.results = None
 
     def perform(self):
-        self.results = blocked_sampled_test(
-            self.observed_values,
-            self.unit_assignments,
+        observed_values = []
+        for block in self.observed_values:
+            np_block = []
+            for observation in block:
+                np_block.append(np.array(observation))
+            observed_values.append(np.array(np_block))
+        np_observed_values = np.array(observed_values)
+        np_unit_assignments = np.array([np.array(x) for x in self.unit_assignments])
+        results = blocked_sampled_test(
+            np_observed_values,
+            np_unit_assignments,
             self.test_statistic,
             alpha=0.01,
             iterations=10000
         )
+        self.results = results
     
     def load_data(self):
         unit_assignments = []

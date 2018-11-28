@@ -91,8 +91,7 @@ def blocked_sampled_test(
             under += 1
     e = datetime.now()
     print "---Time for running permutation test: ", unicode(e-s)
-    print "\nConfidence Interval of p-value:",
-    proportion_confint(under, iterations, alpha, 'beta')
+    print "\nConfidence Interval of p-value: %f\n" % proportion_confint(under, iterations, alpha, 'beta')[0]
     return (1.0*under) / (1.0*iterations)
 
 
