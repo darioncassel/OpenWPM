@@ -373,7 +373,7 @@ class TaskManager:
                 with condition:
                     condition.notifyAll()  # All browsers loaded, start
             elif index == "experimental":
-                experimental_browsers = [b for b in self.browsers if b.browser_params["experimental"]]
+                experimental_browsers = [b for b in self.browsers if not b.browser_params["control"]]
                 # send the command to all browsers and sync it
                 condition = threading.Condition()  # block threads until ready
                 command_executed = [False] * len(experimental_browsers)
