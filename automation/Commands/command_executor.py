@@ -9,7 +9,7 @@ def execute_command(command, webdriver, browser_settings, browser_params,
     commands are of form (COMMAND, ARG0, ARG1, ...)
     """
     if command[0] == 'CLICK':
-        browser_commands.click(driver=webdriver, xpath=command[1])
+        browser_commands.click(driver=webdriver, xpath=command[1], sleep=command[2])
 
     if command[0] == 'SWITCH_TO_FRAME':
         browser_commands.switch_to_frame(driver=webdriver, idx=command[1])

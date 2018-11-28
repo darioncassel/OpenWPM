@@ -33,8 +33,9 @@ NUM_MOUSE_MOVES = 10  # Times to randomly move the mouse
 RANDOM_SLEEP_LOW = 1  # low (in sec) for random sleep between page loads
 RANDOM_SLEEP_HIGH = 7  # high (in sec) for random sleep between page loads
 
-def click(driver, xpath):
+def click(driver, xpath, sleep):
     driver.find_elements_by_xpath(xpath)[0].click()
+    time.sleep(sleep)
 
 def switch_to_frame(driver, idx):
     driver.switch_to.frame(driver.find_elements_by_tag_name("iframe")[idx])
