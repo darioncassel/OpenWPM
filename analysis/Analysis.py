@@ -1,6 +1,4 @@
-# import sys
-# from os import path
-# sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+from sys import maxint
 import numpy as np
 from PermutationTest import blocked_sampled_test
 
@@ -69,6 +67,21 @@ class Analysis():
                 observations.append(observation)
         self.unit_assignments = unit_assignments
         self.observed_values = observations
+        self.size_data()
+    
+    def size_data(self):
+        min_len = maxint
+        for observation in self.observed_values:
+            ob_len = len(observation[0])
+            if ob_len < min_len:
+                min_len = ob_len
+        new_observations = []
+        for observation in self.observed_values:
+            new_observation = []
+            for unit in observation:
+                new_observation.append(unit[:min_len])
+            new_observations.append(new_observation)
+        self.observed_values = new_observations
     
     def get_results(self):
         return self.results

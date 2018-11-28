@@ -115,16 +115,20 @@ class Experiment(object):
                 proc.kill()
             if "Xvfb" in proc.name():
                 proc.kill()
+    
+    def cleanup(self):
+        self.kill_orphan_browsers()
+        self.clean_data_dir()
 
     def run(self):
-        self.clean_data_dir()
         self.blocked_data = []
         for _ in range(self.num_blocks):
+            self.cleanup()
             self.init_manager()
             self.run_once()
             self.pd.process()
             self.blocked_data.append(self.pd.save_data())
-            self.kill_orphan_browsers()
+            self.cleanup()
         
     def get_observations(self):
         return self.blocked_data
