@@ -17,6 +17,7 @@ class Analysis():
         self.results = None
 
     def perform(self):
+        self.size_data()
         observed_values = []
         for block in self.observed_values:
             np_block = []
@@ -67,7 +68,6 @@ class Analysis():
                 observations.append(observation)
         self.unit_assignments = unit_assignments
         self.observed_values = observations
-        self.size_data()
     
     def size_data(self):
         min_len = maxint
