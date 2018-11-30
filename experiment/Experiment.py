@@ -136,9 +136,9 @@ class Experiment(object):
     def get_assignments(self):
         # return self.block_assignments
         assignments = []
-        for _ in range(self.num_blocks):
-            assignment = [0] * self.num_blocks
-            for i in range(self.num_blocks/2):
+        for block in self.blocked_data:
+            assignment = [0] * len(block)
+            for i in range(len(block) / 2):
                 assignment[i] = 1
             assignments.append(assignment)
         return assignments
