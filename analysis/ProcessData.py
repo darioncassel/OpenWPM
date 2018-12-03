@@ -80,7 +80,13 @@ class ProcessData():
     def process(self):
         experimental_observations, control_observations = self.read_files()
         self.features_e, self.features_c = self.extract_features(experimental_observations, control_observations)
-        self.all_topics, self.feature_matrix = self.generate_total_feature_matrix(features_e, features_c)
+        self.all_topics, self.feature_matrix = self.generate_total_feature_matrix(self.features_e, self.features_c)
     
     def save_data(self):
-        return self.features_e, self.features_c, self.all_topics, self.feature_matrix
+        data = {
+            "features_e": self.features_e,
+            "features_c": self.features_c,
+            "all_features": self.all_topics,
+            "feature_matrix": self.feature_matrix
+        }
+        return data
