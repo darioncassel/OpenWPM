@@ -151,7 +151,7 @@ class Experiment(object):
             out_str += "\n"
         out_str += "blocks\n"
         for i, data in enumerate(self.blocked_data):
-            features_e, features_c topics, block = data
+            features_e, features_c, topics, block = data
             out_str += "RAWDATA " + str(i + 1) + "\n"
             out_str += "features_e\n" 
             for tl in features_e:
