@@ -155,36 +155,3 @@ class Experiment(object):
         }
         with open(self.save_path, "w") as save_file:
             pickle.dump(data, save_file)
-    
-    # def save_data(self):
-    #     out_str = "unit assignments\n"
-    #     for assignment in self.get_assignments():
-    #         for unit in assignment:
-    #             out_str += str(unit) + ","
-    #         out_str += "\n"
-    #     out_str += "blocks\n"
-    #     for i, data in enumerate(self.blocked_data):
-    #         features_e, features_c, topics, block = data
-    #         out_str += "RAWDATA " + str(i + 1) + "\n"
-    #         out_str += "features_e\n" 
-    #         for tl in features_e:
-    #             for t in tl:
-    #                 out_str += t + ","
-    #             out_str += "\n"
-    #         out_str += "features_c\n" 
-    #         for tl in features_c:
-    #             for t in tl:
-    #                 out_str += t + ","
-    #             out_str += "\n"
-    #         out_str + "labels " + str(i + 1) + "\n"
-    #         for topic in topics:
-    #             out_str += topic + ","
-    #         out_str += "\n"
-    #         out_str += "isblock " + str(i + 1) + "\n"
-    #         for observation in block:
-    #             for unit in observation:
-    #                 out_str += str(unit) + ","
-    #             out_str += "\n"
-    #         out_str += "\n"
-    #     with open(self.save_path, "w") as save_file:
-    #         save_file.write(out_str)
