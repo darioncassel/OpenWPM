@@ -118,8 +118,11 @@ class Experiment(object):
                 proc.kill()
     
     def cleanup(self):
-        self.kill_orphan_browsers()
-        self.clean_data_dir()
+        try:
+            self.kill_orphan_browsers()
+            self.clean_data_dir()
+        except Exception:
+            pass
 
     def run(self):
         self.blocked_data = []
