@@ -1,6 +1,7 @@
 from sys import maxint
 import numpy as np
 from PermutationTest import blocked_sampled_test
+import pickle
 
 
 class Analysis():
@@ -8,7 +9,8 @@ class Analysis():
     def __init__(self, 
                  test_statistic,
                  observed_values=[], 
-                 unit_assignments=[], 
+                 unit_assignments=[],
+                 truncate = -1,
                  data_path="tmp_data_file.txt",
                  save_path="results.txt"):
         self.test_statistic = test_statistic
@@ -17,9 +19,12 @@ class Analysis():
         self.data_path = data_path
         self.save_path = save_path
         self.results = None
+        self.truncate = truncate
 
     def perform(self):
+        self.truncate_data(self.truncate)
         self.size_data()
+        self.print_observations(self.observed_values)
         observed_values = []
         for block in self.observed_values:
             np_block = []
@@ -38,39 +43,60 @@ class Analysis():
         self.results = results
     
     def load_data(self):
-        unit_assignments = []
-        at_unit = False
-        at_block = False
-        observation = []
-        observations = []
         with open(self.data_path, "r") as save_file:
-            lines = save_file.readlines()
-            for line in lines:
-                if at_unit:
-                    if "1" in line or "0" in line:
-                        assignment = [int(x.strip()) for x in line.split(",") if x.strip() == '1' or x.strip() == '0']
-                        if assignment:
-                            unit_assignments.append(assignment)
-                if at_block:
-                    if "isblock" in line:
-                        if observation:
-                            observations.append(observation)
-                            observation = []
-                        continue
-                    if "1" in line or "0" in line:
-                        units = [int(x.strip()) for x in line.split(",") if x.strip() == "1" or x.strip() == "0"]
-                        if units:
-                            observation.append(units)
-                if "unit assignments" in line:
-                    at_unit = True
-                if "blocks" in line:
-                    at_unit = False
-                    at_block = True
-            if observation:
-                observations.append(observation)
-        self.unit_assignments = unit_assignments
-        self.observed_values = observations
+            data = pickle.load(save_file)
+            self.unit_assignments = data["unit_assignments"]
+            self.observed_values = data["observed_values"]
     
+    def determine_top_k(self, k):
+        top_k_e = []
+        top_k_c = []
+        for data in self.observed_values:
+            features_e = data["features_e"]
+            features_c = data["features_c"]
+            for fl in features_e:
+                top_k_e.append(fl[:k])
+            for fl in features_c:
+                top_k_c.append(fl[:k])
+        return top_k_e, top_k_c        
+    
+    def truncate_data(self, k=-1):
+        new_observed_values = []
+        if k > 0:
+            tke, tkc = self.determine_top_k(k)
+            new_all_features = []
+            for i in range(len(tke)):
+                new_features_sub = []
+                for f in tke[i]:
+                    if f not in new_features_sub:
+                        new_features_sub.append(f)
+                for f in tkc[i]:
+                    if f not in new_features_sub:
+                        new_features_sub.append(f)
+                new_all_features.append(new_features_sub)
+            for i, data in enumerate(self.observed_values):
+                all_features = data["all_features"]
+                block = data["feature_matrix"]
+                unit_assignments = self.unit_assignments
+                new_block = []
+                for j, browser in enumerate(block):
+                    if unit_assignments[i][j]:
+                        check = tke[i]
+                    else:
+                        check = tkc[i]
+                    new_browser = [0]*len(new_all_features[i])
+                    for k, obs in enumerate(browser):
+                        if all_features[k] in check:
+                            idx = new_all_features[i].index(all_features[k])
+                            new_browser[idx] = 1
+                    new_block.append(new_browser)
+                new_observed_values.append(new_block)
+        else:
+            for data in self.observed_values:
+                block = data["feature_matrix"]
+                new_observed_values.append(block)
+        self.observed_values = new_observed_values
+
     def size_data(self):
         min_len = maxint
         for observation in self.observed_values:
