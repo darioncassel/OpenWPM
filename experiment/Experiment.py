@@ -136,7 +136,7 @@ class Experiment(object):
     def get_assignments(self):
         # return self.block_assignments
         assignments = []
-        for block in self.blocked_data:
+        for _, _, _, block in self.blocked_data:
             assignment = [0] * len(block)
             for i in range(len(block) / 2):
                 assignment[i] = 1
@@ -150,7 +150,23 @@ class Experiment(object):
                 out_str += str(unit) + ","
             out_str += "\n"
         out_str += "blocks\n"
-        for i, block in enumerate(self.blocked_data):
+        for i, data in enumerate(self.blocked_data):
+            features_e, features_c topics, block = data
+            out_str += "RAWDATA " + str(i + 1) + "\n"
+            out_str += "features_e\n" 
+            for tl in features_e:
+                for t in tl:
+                    out_str += t + ","
+                out_str += "\n"
+            out_str += "features_c\n" 
+            for tl in features_c:
+                for t in tl:
+                    out_str += t + ","
+                out_str += "\n"
+            out_str + "labels " + str(i + 1) + "\n"
+            for topic in topics:
+                out_str += topic + ","
+            out_str += "\n"
             out_str += "isblock " + str(i + 1) + "\n"
             for observation in block:
                 for unit in observation:

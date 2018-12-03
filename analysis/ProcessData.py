@@ -75,12 +75,12 @@ class ProcessData():
                 i = all_topics.index(t)
                 vec[i] = 1
             total_matrix.append(vec)
-        return total_matrix
+        return all_topics, total_matrix
     
     def process(self):
         experimental_observations, control_observations = self.read_files()
-        features_e, features_c = self.extract_features(experimental_observations, control_observations)
-        self.feature_matrix = self.generate_total_feature_matrix(features_e, features_c)
+        self.features_e, self.features_c = self.extract_features(experimental_observations, control_observations)
+        self.all_topics, self.feature_matrix = self.generate_total_feature_matrix(features_e, features_c)
     
     def save_data(self):
-        return self.feature_matrix
+        return self.features_e, self.features_c, self.all_topics, self.feature_matrix
