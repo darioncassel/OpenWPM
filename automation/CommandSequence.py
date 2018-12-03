@@ -42,7 +42,7 @@ class CommandSequence:
         self.total_timeout = 0
         self.contains_get_or_browse = False
 
-    def click(self, xpath, timeout=120, sleep=60):
+    def click(self, xpath, timeout=200, sleep=120):
         """ clicks mouse on element specified by xpath """
         self.total_timeout += timeout
         if not self.contains_get_or_browse:
