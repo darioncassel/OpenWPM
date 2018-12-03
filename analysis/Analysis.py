@@ -24,7 +24,6 @@ class Analysis():
     def perform(self):
         self.truncate_data(self.truncate)
         self.size_data()
-        self.print_observations(self.observed_values)
         observed_values = []
         for block in self.observed_values:
             np_block = []
@@ -85,7 +84,7 @@ class Analysis():
                     else:
                         check = tkc[i]
                     new_browser = [0]*len(new_all_features[i])
-                    for k, obs in enumerate(browser):
+                    for k, in range(len(browser)):
                         if all_features[k] in check:
                             idx = new_all_features[i].index(all_features[k])
                             new_browser[idx] = 1
