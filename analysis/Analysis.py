@@ -53,9 +53,10 @@ class Analysis():
         for data in self.observed_values:
             features_e = data["features_e"]
             features_c = data["features_c"]
-            for fl in features_e:
+            max_idx = min(len(features_e), len(features_c))
+            for fl in features_e[:max_idx]:
                 top_k_e.append(fl[:k])
-            for fl in features_c:
+            for fl in features_c[:max_idx]:
                 top_k_c.append(fl[:k])
         return top_k_e, top_k_c        
     
@@ -84,7 +85,7 @@ class Analysis():
                     else:
                         check = tkc[i]
                     new_browser = [0]*len(new_all_features[i])
-                    for k, in range(len(browser)):
+                    for k in range(len(browser)):
                         if all_features[k] in check:
                             idx = new_all_features[i].index(all_features[k])
                             new_browser[idx] = 1
