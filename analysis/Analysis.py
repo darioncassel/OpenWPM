@@ -47,50 +47,35 @@ class Analysis():
             self.unit_assignments = data["unit_assignments"]
             self.observed_values = data["observed_values"]
     
-    def determine_top_k(self, k):
-        top_k_e = []
-        top_k_c = []
-        for data in self.observed_values:
-            features_e = data["features_e"]
-            features_c = data["features_c"]
-            max_idx = min(len(features_e), len(features_c))
-            for fl in features_e[:max_idx]:
-                top_k_e.append(fl[:k])
-            for fl in features_c[:max_idx]:
-                top_k_c.append(fl[:k])
-        return top_k_e, top_k_c        
-    
     def truncate_data(self, k=-1):
         new_observed_values = []
         if k > 0:
-            tke, tkc = self.determine_top_k(k)
-            new_all_features = []
-            for i in range(len(tke)):
-                new_features_sub = []
-                for f in tke[i]:
-                    if f not in new_features_sub:
-                        new_features_sub.append(f)
-                for f in tkc[i]:
-                    if f not in new_features_sub:
-                        new_features_sub.append(f)
-                new_all_features.append(new_features_sub)
-            for i, data in enumerate(self.observed_values):
-                all_features = data["all_features"]
-                block = data["feature_matrix"]
-                unit_assignments = self.unit_assignments
-                new_block = []
-                for j, browser in enumerate(block):
-                    if unit_assignments[i][j]:
-                        check = tke[i]
-                    else:
-                        check = tkc[i]
-                    new_browser = [0]*len(new_all_features[i])
-                    for k in range(len(browser)):
-                        if all_features[k] in check:
-                            idx = new_all_features[i].index(all_features[k])
-                            new_browser[idx] = 1
-                    new_block.append(new_browser)
-                new_observed_values.append(new_block)
+            for data in self.observed_values:
+                features_e = data["features_e"]
+                features_c = data["features_c"]
+                all_features = []
+                for tl in features_e:
+                    for t in tl[:k]:
+                        if t not in all_features:
+                            all_features.append(t)
+                for tl in features_c:
+                    for t in tl[:k]:
+                        if t not in all_features:
+                            all_features.append(t)
+                total_matrix = []
+                for tl in features_e:
+                    vec = [0] * len(all_features)
+                    for t in tl[:k]:
+                        i = all_features.index(t)
+                        vec[i] = 1
+                    total_matrix.append(vec)
+                for tl in features_c:
+                    vec = [0] * len(all_features)
+                    for t in tl[:k]:
+                        i = all_features.index(t)
+                        vec[i] = 1
+                    total_matrix.append(vec)
+                new_observed_values.append(total_matrix)
         else:
             for data in self.observed_values:
                 block = data["feature_matrix"]
