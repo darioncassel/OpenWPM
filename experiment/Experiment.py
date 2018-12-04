@@ -98,15 +98,26 @@ class Experiment(object):
                 self.manager.execute_command_sequence(command_sequence, index='**')
         self.manager.close()
 
+    def clear_profiles(self):
+        folder = "/tmp/"
+        for filename in os.listdir(folder):
+            if "rust_mozprofile" in filename:
+                file_path = os.path.join(folder, filename)
+                try:
+                    if os.path.isdir(file_path):
+                        shutil.rmtree(file_path, ignore_errors=True)
+                except Exception as e:
+                    print(e)
+
     def clean_data_dir(self):
         folder = self.data_directory + "sources/"
-        for the_file in os.listdir(folder):
-            file_path = os.path.join(folder, the_file)
+        for filename in os.listdir(folder):
+            file_path = os.path.join(folder, filename)
             try:
                 if os.path.isfile(file_path):
-                    os.unlink(file_path)
+                    os.remove(file_path)
             except Exception as e:
-                print(e)
+                raise(e)
     
     def kill_orphan_browsers(self):
         for proc in psutil.process_iter():
@@ -119,10 +130,11 @@ class Experiment(object):
     
     def cleanup(self):
         try:
-            self.kill_orphan_browsers()
+            self.clear_profiles()
             self.clean_data_dir()
-        except Exception:
-            pass
+            self.kill_orphan_browsers()
+        except Exception as e:
+            print "Cleanup exception: {0}".format(str(e))
 
     def run(self):
         self.blocked_data = []
@@ -133,7 +145,7 @@ class Experiment(object):
             self.pd.process()
             self.blocked_data.append(self.pd.save_data())
             self.cleanup()
-        
+
     def get_observations(self):
         return self.blocked_data
     
