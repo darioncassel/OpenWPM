@@ -9,28 +9,28 @@ TEST_NAME = "demo"
 
 
 def run_experiment(data_directory, num_browsers=20, num_blocks=10):
-    persona = Experiment(
+    demo = Experiment(
         data_directory=data_directory,
         num_browsers=num_browsers,
         num_blocks=num_blocks,
         feature_extract=extract_topics,
         save_path=TEST_NAME + "_data.txt"
     )
-    persona.add_stage(
+    demo.add_stage(
         "start", "all", "https://www.youtube.com/",
         [visit, scroll]
     )
-    persona.add_stage(
+    demo.add_stage(
         "treatment", "experimental", "https://www.google.com/", 
         [visit]
     )
-    persona.add_stage(
+    demo.add_stage(
         "measurement", "all", "https://www.youtube.com/", 
         [visit, scroll, save_page_source]
     )
-    persona.run()
-    persona.save_data()
-    return persona.get_observations(), persona.get_assignments()
+    demo.run()
+    demo.save_data()
+    return demo.get_observations(), demo.get_assignments()
 
 def run_analysis(observations, assignments):
     analysis = Analysis(
